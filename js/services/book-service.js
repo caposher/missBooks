@@ -7,6 +7,8 @@ export const bookService = {
   searchBook,
   addBook,
   removeBook,
+  getNextBookId,
+  getPrevBookId,
 };
 const BOOK_KEY = 'books';
 
@@ -388,6 +390,21 @@ function removeBook(bookId) {
   storageService.remove(BOOK_KEY, bookId);
 }
 
+function getNextBookId(bookId) {
+  return storageService.query(BOOK_KEY).then((books) => {
+    const idx = books.findIndex((book) => book.id === bookId);
+    return books[(idx + 1) % gBooks.length].id;
+  });
+}
+
+function getPrevBookId(bookId) {
+  return storageService.query(BOOK_KEY).then((books) => {
+    const idx = books.findIndex((book) => book.id === bookId);
+    const prevIdx = idx - 1;
+    return gBooks[prevIdx < 0 ? gBooks.length - 1 : prevIdx].id;
+  });
+}
+
 function searchBook(bookKey) {
   if (bookKey === '') return Promise.reject('invalid search data');
   return axios
@@ -412,7 +429,7 @@ function searchBook(bookKey) {
           listPrice: {
             isOnSale: book.saleInfo.saleability === 'FOR_SALE',
             amount: 111.11,
-            currencyCode: 'NIS',
+            currencyCode: 'ILS',
           },
         };
         return relevant;

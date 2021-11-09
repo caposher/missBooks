@@ -188,6 +188,12 @@ img {
   cursor: pointer;
 }
 
+.book-nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .review-add form {
   padding: 30px;
   display: flex;

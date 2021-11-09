@@ -16,7 +16,11 @@ export default {
             <h3>Language: {{book.language}}</h3>
             <h3> {{readingLen}}</h3>
             <h3> Price: <span :class="PriceColor">{{bookPrice}}</span></h3>
-            <router-link to="/books">Back</router-link>
+            <div class="book-nav">
+                <router-link :to="'/books/'+ prevBook">Previous book</router-link>
+                <router-link to="/books">Back</router-link>
+                <router-link :to="'/books/' + nextBook">Next book</router-link>
+            </div>
             <img class="sale" v-if="onSale" src="../../img/sale.png">
             <div v-for="review in book.reviews" :key="book.id">
                 <p>fullName: {{review.fullName}}</p>
@@ -25,31 +29,15 @@ export default {
                 <p>txt: {{review.txt}}</p>
             </div>
         </section>
-        <review-add @review="updateBook"/>
+        <!-- <review-add @review="updateBook"/> -->
       </section>
   `,
   data() {
     return {
       book: null,
+      nextBook: null,
+      prevBook: null,
     };
-  },
-  created() {
-    this.getBook();
-  },
-
-  methods: {
-    getBook() {
-      const { bookId } = this.$route.params;
-      bookService.getById(bookId).then((book) => {
-        this.book = book;
-      });
-    },
-    updateBook(review) {
-      // debugger;
-      this.book.reviews ? this.book.reviews.push(review) : (this.book.reviews = [review]);
-      bookService.updateBook(this.book);
-      this.getBook();
-    },
   },
 
   computed: {
@@ -86,10 +74,25 @@ export default {
     onSale() {
       return this.book.listPrice.isOnSale;
     },
+
     getAuthor() {
       return this.book.authors ? this.book.authors[0] : '';
     },
   },
+  watch: {
+    '$route.params.bookId': {
+      handler() {
+        const { bookId } = this.$route.params;
+        bookService.getById(bookId).then((book) => {
+          this.book = book;
+          bookService.getPrevBookId(book.id).then((id) => (this.prevBook = id));
+          bookService.getNextBookId(book.id).then((id) => (this.nextBook = id));
+        });
+      },
+      immediate: true,
+    },
+  },
+
   components: {
     textLong,
     reviewAdd,
