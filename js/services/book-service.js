@@ -367,7 +367,7 @@ const gBooks = [
     },
   },
 ];
-// localStorage.setItem(BOOK_KEY, JSON.stringify(gBooks));
+localStorage.setItem(BOOK_KEY, JSON.stringify(gBooks));
 
 function quary() {
   return storageService.query(BOOK_KEY);
